@@ -3,6 +3,7 @@ package com.example.redditClone.service;
 
 import com.example.redditClone.dto.AuthenticationResponse;
 import com.example.redditClone.dto.LoginRequest;
+import com.example.redditClone.dto.RefreshTokenRequest;
 import com.example.redditClone.dto.RegisterRequest;
 import com.example.redditClone.model.NotificationEmail;
 import com.example.redditClone.model.User;
@@ -12,6 +13,7 @@ import com.example.redditClone.repository.VerificationTokenRepository;
 import com.example.redditClone.runtimeException.SpringRedditException;
 import com.example.redditClone.security.JwtProvider;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -81,4 +83,23 @@ public class AuthService {
         String token = jwtProvider.generateToken(authenticate);
         return new AuthenticationResponse(token, loginRequest.getUsername());
     }
+
+    public Long getLoggedUserId(){
+        Long ID = 0L;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            ID = ((User)principal).getUserID();
+        }
+
+        return ID;
+    }
+
+
+    public boolean isLoggedIn() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated();
+    }
+
+
+
 }
